@@ -22,9 +22,25 @@ let lockBoard = false;
 
 */
 function initGame() {
-    // Write your code here
+    // Write your code here    
+    let board = document.getElementById("game-board");
+    board.innerHTML = "";
+    cards = [];
+
+    let counter = 0;
+
+    for(let i = 0; i < 16; i++) {
+            createCard(symbols[counter < 8? counter : counter - 8]);
+            counter++;
+    }
+
+    shuffleArray(cards);
+    for(let j = 0; j < cards.length; j++) {
+        board.appendChild(cards[j]);
+    }
 
     document.getElementById('restart-btn').addEventListener('click', initGame);
+   
 }
 
 /*
@@ -34,6 +50,18 @@ function initGame() {
 */
 function createCard(symbol) {
     // Write your code here
+
+    let cardDiv = document.createElement('div');
+    cardDiv.classList.add('card');
+    cardDiv.dataset.symbol = symbol;
+    let text = document.createElement('p');
+    text.textContent = '';
+
+    cardDiv.appendChild(text);
+
+    cardDiv.addEventListener('click', ()=>flipCard(cardDiv));
+    cards.push(cardDiv);
+
 }
 
 /*
@@ -47,7 +75,23 @@ function createCard(symbol) {
 function flipCard(card) {
     // If the board is supposed to be locked or you picked the same card you already picked
     if (lockBoard || card === firstCard) return;
+    
     // Write your code here
+    let currSymbol = card.getAttribute('data-symbol');
+    if (!firstCard) {
+
+        firstCard = card;
+        firstCard.classList.add('flipped');
+
+        card.textContent = currSymbol;
+
+
+    } else if (firstCard && !secondCard) {
+        secondCard = card;
+        secondCard.classList.add('flipped');
+        card.textContent = currSymbol;
+        checkForMatch();
+    }
 }
 
 /* 
@@ -57,6 +101,12 @@ function flipCard(card) {
 */
 function checkForMatch() {
     // Write your code here
+
+    if(firstCard.dataset.symbol === secondCard.dataset.symbol) {
+        disableCards();
+    } else {
+        unflipCards();
+    }
 }
 
 /* 
@@ -66,6 +116,10 @@ function checkForMatch() {
 */
 function disableCards() {
     // Write your code here
+    console.log("disabling cards");
+    firstCard.classList.add("matched");
+    secondCard.classList.add("matched");
+    resetBoard();
 }
  
 /* ---------------------  Everything under has already been done for you -------------------------- */
